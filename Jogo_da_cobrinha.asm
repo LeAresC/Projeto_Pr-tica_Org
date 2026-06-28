@@ -97,12 +97,12 @@ rand:
 	loadn r1, #1033
 	loadn r2, #3301
 	loadn r3, #1200
+    load r0, Semente
 	mul r4, r0, r1
 	add r4, r4, r2
-    load r7, DirecaoMovimento
-    add r4, r4, r7
 	mod r4, r4, r3
     mov r0, r4
+    store Semente, r0
 	rts
 
 atualizar_cobra:
@@ -142,7 +142,7 @@ comeu_maca:
     load r1, CabecaCobra
     add r0, r0, r1
     loadi r0, r0
-    loadn r2, #2381
+    load r2, CorMaca
     cmp r0,r2
     jne nao_comeu
 
@@ -197,7 +197,7 @@ gerar_maca:
     cmp r2, r3                 
     jeq gerar_maca
 
-	loadn r1, #2381
+	load r1, CorMaca
 	outchar r1, r0
 
 	loadn r2, #TelaJogo
@@ -263,5 +263,6 @@ DirecaoMovimento: var #1
 static DirecaoMovimento, #255
 Semente: var #1
 static Semente, #42           
-		
+CorMaca: var #1
+static CorMaca, #2368		
 	
