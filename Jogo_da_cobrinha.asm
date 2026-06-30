@@ -136,18 +136,33 @@ decide_diculdade:
 facil:
     loadn r0, #35
     store Velocidade, r0
+
+    loadn r0, #HighScoreEasy
+    loadn r1, #HighScore
+    storei r1, r0
+
     call limpa_tela
     jmp main
 
 medio:
     loadn r0, #30
     store Velocidade, r0
+
+    loadn r0, #HighScoreMedium
+    loadn r1, #HighScore
+    storei r1, r0
+
     call limpa_tela
     jmp main
 
 dificil:
     loadn r0, #25
     store Velocidade, r0
+
+    loadn r0, #HighScoreHard
+    loadn r1, #HighScore
+    storei r1, r0
+
     call limpa_tela
     jmp main
 
@@ -155,6 +170,7 @@ main:
     loadn r0, #0
     store CabecaCobra, r0  
     store RaboCobra, r0
+    store CurScore, r0
 
     store QuantMaca, r0    ; Zera o contador de maçãs
     store Tempo, r0        ; Zera o timer de animação
@@ -179,6 +195,7 @@ main:
     call gerar_paredes
     call inicializa_posicao_maca
     call gerar_score
+    call gerar_highscore
 
 main_loop:
 	call obter_movimento
@@ -513,6 +530,7 @@ fim_de_jogo:
     outchar r1, r0
 
     call loop_restart
+    call tenta_mudar_highscore
     jmp pergunta_dificuldade
 
 loop_restart:
@@ -721,6 +739,7 @@ gerar_score:
 
 aumenta_score:
     call ajustar_unidade
+    call ajustar_score_memoria
     rts
 
 
@@ -789,6 +808,11 @@ ajustar_milhar:
     storei r0, r2
     rts
 
+ajustar_score_memoria:
+    load r0, CurScore
+    inc r0
+    store CurScore, r0
+
 tenta_animar_maca:
     load r0, Tempo
     loadn r1, #10
@@ -845,6 +869,94 @@ pula_desenho_maca:           ; Ponto de aterrissagem do pulo
     jne loop_atualiza_cor
     rts
 
+tenta_mudar_highscore:
+    load r0, CurScore
+    load r1, HighScore
+    loadi r2, r1
+    cmp r0, r2
+    jgr muda_high_score
+    rts
+
+muda_high_score:
+    storei r1, r0
+    rts
+
+
+gerar_highscore:
+    loadn r0, #0
+    loadn r1, #'H'
+    outchar r1, r0
+
+    inc r0
+    loadn r1, #'I'
+    outchar r1, r0
+
+    inc r0
+    loadn r1, #'-'
+    outchar r1, r0
+
+    inc r0
+    loadn r1, #'S'
+    outchar r1, r0
+
+    inc r0
+    loadn r1, #'C'
+    outchar r1, r0
+
+    inc r0
+    loadn r1, #'O'
+    outchar r1, r0
+
+    inc r0
+    loadn r1, #'R'
+    outchar r1, r0
+
+    inc r0
+    loadn r1, #'E'
+    outchar r1, r0
+
+    inc r0
+    loadn r1, #':'
+    outchar r1, r0
+
+    loadn r2, #4
+    add r0, r0, r2
+
+gerar_valor_highscore:
+    loadn r1, #'0'
+
+    load r4, HighScore
+    loadi r4, r4
+    loadn r5, #10
+    mod r2, r4, r5 
+    add r1, r1, r2
+    outchar r1, r0
+
+    dec r0
+    div r4, r4, r5
+    loadn r1, #'0'
+    mod r2, r4, r5
+    add r1, r1, r2
+    outchar r1, r0
+
+    dec r0
+    div r4, r4, r5
+    loadn r1, #'0'
+    mod r2, r4, r5
+    add r1, r1, r2
+    outchar r1, r0
+
+    dec r0
+    div r4, r4, r5
+    loadn r1, #'0'
+    mod r2, r4, r5
+    add r1, r1, r2
+    outchar r1, r0
+
+    rts
+
+
+
 TelaJogo: var #1200     
 CabecaCobra: var #1
 static CabecaCobra, #0
@@ -870,7 +982,15 @@ CorMaca_A: var #1
 static CorMaca_A, #2368
 CorMaca_B: var #1
 static CorMaca_B, #2858 
-
 Tempo: var #1
 static Tempo, #0
 Velocidade: var #1
+CurScore: var#1
+static CurScore, #0
+HighScoreEasy: var#1
+static HighScoreEasy, #0
+HighScoreMedium: var#1
+static HighScoreMedium, #0
+HighScoreHard: var#1
+static HighScoreHard, #0
+HighScore: var#1
